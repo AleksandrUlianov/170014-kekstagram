@@ -5,7 +5,7 @@
 
 ---
 
-_Не удаляйте и не обращайте внимание на файлы:_<br>
+_Не yдаляйте и не обращайте внимание на файлы:_<br>
 _`.editorconfig`, `.eslintignore`, `.eslintrc`, `.gitignore`, `.travis.yml`, `package.json`._
 
 ---
