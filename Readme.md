@@ -1,11 +1,11 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Александр Ульянов](https://up.htmlacademy.ru/javascript/4/user/170014).
-* Наставник: `Неизвестно`.
+* Наставник: [Алексей Хапов](https://htmlacademy.ru/profile/id118459).
 
 ---
 
-_Не удаляйте и не обращайте внимание на файлы:_<br>
+_Не yдаляйте и не обращайте внимание на файлы:_<br>
 _`.editorconfig`, `.eslintignore`, `.eslintrc`, `.gitignore`, `.travis.yml`, `package.json`._
 
 ---
