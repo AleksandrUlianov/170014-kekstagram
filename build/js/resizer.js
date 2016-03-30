@@ -114,11 +114,112 @@
 
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
+
+      if (Math.random() > 0.5) {
+
+        this._ctx.strokeRect(
           (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
           (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2);
+        stopX = (this._resizeConstraint.side - this._ctx.lineWidth) / 2
+        stopY = (this._resizeConstraint.side - this._ctx.lineWidth) / 2;
+      }
+      else {
+
+        //--> Aleksandr Ulianov. line of circle
+        var xStart = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+        var yStart = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+        var xEnd = this._resizeConstraint.side /2 - this._ctx.lineWidth;
+        var yEnd = this._resizeConstraint.side /2 - this._ctx.lineWidth;
+        var stopX = xEnd;
+        var stopY = yEnd;
+        var rad = this._ctx.lineWidth / 2;
+        var curX = xStart;
+        var curY = yStart;
+
+        var CircleSpace = 8;
+        this._ctx.fillStyle = "yellow";
+
+        while (curX <= (xEnd-2*rad)) {
+          this._ctx.beginPath();
+          this._ctx.arc(curX + rad, curY, rad, 0, 2 * Math.PI);
+          curX = curX + rad + CircleSpace;
+
+          this._ctx.fill();
+
+        }
+        ;
+
+        curX = xEnd;
+        stopX = curX + rad;
+        //curX = curX - rad - CircleSpace;
+
+        while (curY <= (yEnd- 2*rad)) {
+
+          this._ctx.beginPath();
+          this._ctx.arc(curX + rad, curY, rad, 0, 2 * Math.PI);
+          curY = curY + rad + CircleSpace;
+
+          this._ctx.fill();
+
+        }
+        ;
+
+        curY = yEnd;
+        stopY = curY + rad;
+
+        while (curX >= xStart) {
+          this._ctx.beginPath();
+          this._ctx.arc(curX + rad, curY, rad, 0, 2 * Math.PI);
+          curX = curX - rad - CircleSpace;
+
+          this._ctx.fill();
+
+        }
+        ;
+
+        while (curY >= yStart) {
+
+          this._ctx.beginPath();
+          this._ctx.arc(curX + rad, curY, rad, 0, 2 * Math.PI);
+          curY = curY - rad - CircleSpace;
+
+          this._ctx.fill();
+
+        }
+        ;
+      };
+      //--< Aleksandr Ulianov. line of circle
+
+      //--> Aleksandr Ulianov dark background added
+
+      this._ctx.beginPath();
+      //outer rectangle
+      this._ctx.moveTo(-this._container.width / 2,-this._container.height / 2);
+      this._ctx.lineTo(this._container.width / 2,-this._container.height / 2);
+      this._ctx.lineTo(this._container.width / 2,this._container.height);
+      this._ctx.lineTo(-this._container.width / 2,this._container.height);
+      this._ctx.lineTo(-this._container.width / 2,-this._container.height / 2);
+
+      //inner rectangle
+      this._ctx.lineTo(( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)),( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)));
+      //this._ctx.lineTo(((this._resizeConstraint.side/2)-(this._ctx.lineWidth)/2),( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)));
+      this._ctx.lineTo(stopX,( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)));
+      this._ctx.lineTo(stopX,stopY);
+      this._ctx.lineTo((-(this._resizeConstraint.side/2)-(this._ctx.lineWidth)),stopY);
+      this._ctx.lineTo((-(this._resizeConstraint.side/2)-(this._ctx.lineWidth)),( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)));
+
+      //fill style
+      this._ctx.fillStyle = "rgba(0,0,0,0.8)";
+      this._ctx.fill("evenodd");
+
+      //text adding
+      this._ctx.font = "15px Tahoma";
+      this._ctx.fillStyle = "yellow";
+      this._ctx.fillText("" + this._image.naturalHeight + " x " + this._image.naturalWidth,-30, - (this._resizeConstraint.side/2)-(this._ctx.lineWidth) - 10);
+
+      //--< Aleksandr Ulianov dark background added
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
