@@ -51,6 +51,123 @@
     this._onDrag = this._onDrag.bind(this);
   };
 
+  var IncDecCoordinate = function(myCoordinate, mySpace, increase) {
+
+    if (increase) {
+      myCoordinate = myCoordinate + mySpace;
+
+    }
+    else {
+      myCoordinate = myCoordinate - mySpace;
+
+    }
+
+    return myCoordinate;
+  };
+
+  //---> Aleksandr Ulianov. function to draw a circle element for a border-line
+  var drawCircle = function(MyCTXToDraw, XCoord, YCoord, myRad) {
+
+    MyCTXToDraw.beginPath();
+    MyCTXToDraw.arc((XCoord + myRad), YCoord, myRad, 0, 2 * Math.PI);
+    MyCTXToDraw.fill();
+
+    return;
+  };
+  //---< Aleksandr Ulianov. function to draw a circle element for a border-line
+
+  //---> Aleksandr Ulianov. function to draw dash border
+  var drawDashBorder = function(myCTX, myLineWidth, myConstraintSide) {
+
+    myCTX.strokeRect(
+      (-myConstraintSide / 2) - myLineWidth / 2,
+      (-myConstraintSide / 2) - myLineWidth / 2,
+      myConstraintSide - myLineWidth / 2,
+      myConstraintSide - myLineWidth / 2);
+    var stopX = (myConstraintSide - myLineWidth) / 2
+    var stopY = (myConstraintSide - myLineWidth) / 2;
+
+    return [stopX, stopY];
+  };
+  //---< Aleksandr Ulianov. function to draw dash border
+
+  //---> Aleksandr Ulianov. function to draw circle-elemented border
+  var drawCircleBorder = function(myCTX, myLineWidth, myConstraintSide) {
+    var xStart = ( - myConstraintSide / 2) - myLineWidth / 2;
+    var yStart = ( - myConstraintSide / 2) - myLineWidth / 2;
+    var xEnd = myConstraintSide / 2 - myLineWidth;
+    var yEnd = myConstraintSide / 2 - myLineWidth;
+    var stopX = xEnd;
+    var stopY = yEnd;
+    var rad = myLineWidth / 2;
+    var curX = xStart;
+    var curY = yStart;
+
+    var CircleSpace = 8;
+    myCTX.fillStyle = "yellow";
+
+    // upper horizontal border-line
+    while (curX <= (xEnd - 2 * rad)) {
+      drawCircle(myCTX, curX, curY, rad);
+      curX = IncDecCoordinate(curX, (rad + CircleSpace), true);
+
+    }
+
+    curX = xEnd;
+    stopX = curX + rad;
+
+    //right vertical border-line
+    while (curY <= (yEnd - 2 * rad)) {
+      drawCircle(myCTX, curX, curY, rad);
+      curY = IncDecCoordinate(curY, (rad + CircleSpace), true);
+
+    }
+
+    curY = yEnd;
+    stopY = curY + rad;
+
+    //lower horizontal border-line
+    while (curX >= xStart) {
+      drawCircle(myCTX, curX, curY, rad);
+      curX = IncDecCoordinate(curX, (rad + CircleSpace), false);
+
+    }
+    curX = xStart - rad;
+
+    //left vertical border-line
+    while (curY >= yStart) {
+      drawCircle(myCTX, curX, curY, rad);
+      curY = IncDecCoordinate(curY, (rad + CircleSpace), false);
+
+    }
+
+    return [stopX, stopY];
+
+  };
+  //---< Aleksandr Ulianov. function to draw circle-elemented border
+
+  //---> Aleksandr Ulianov. function to draw some border
+  var drawBorder = function(myCTX, myLineWidth, myConstraintSide) {
+
+    var returnArray = [0,0];
+
+    if (Math.random() > 0.5) {
+
+      //draw dash border
+      returnArray = drawDashBorder(myCTX, myLineWidth, myConstraintSide);
+
+    }
+    else {
+      //draw border with circles
+      returnArray = drawCircleBorder(myCTX, myLineWidth, myConstraintSide);
+
+    }
+
+    return returnArray;
+
+  };
+  //---< Aleksandr Ulianov. function to draw some border
+
   Resizer.prototype = {
     /**
      * Родительский элемент канваса.
@@ -115,86 +232,15 @@
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
 
-      if (Math.random() > 0.5) {
+      //--> Aleksandr Ulianov. all draw systems moved to the function DrawBorder
+      var stopArray = drawBorder(this._ctx, this._ctx.lineWidth, this._resizeConstraint.side);
 
-        this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
-        stopX = (this._resizeConstraint.side - this._ctx.lineWidth) / 2
-        stopY = (this._resizeConstraint.side - this._ctx.lineWidth) / 2;
-      }
-      else {
-
-        //--> Aleksandr Ulianov. line of circle
-        var xStart = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
-        var yStart = (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
-        var xEnd = this._resizeConstraint.side /2 - this._ctx.lineWidth;
-        var yEnd = this._resizeConstraint.side /2 - this._ctx.lineWidth;
-        var stopX = xEnd;
-        var stopY = yEnd;
-        var rad = this._ctx.lineWidth / 2;
-        var curX = xStart;
-        var curY = yStart;
-
-        var CircleSpace = 8;
-        this._ctx.fillStyle = "yellow";
-
-        while (curX <= (xEnd-2*rad)) {
-          this._ctx.beginPath();
-          this._ctx.arc(curX + rad, curY, rad, 0, 2 * Math.PI);
-          curX = curX + rad + CircleSpace;
-
-          this._ctx.fill();
-
-        }
-        ;
-
-        curX = xEnd;
-        stopX = curX + rad;
-        //curX = curX - rad - CircleSpace;
-
-        while (curY <= (yEnd- 2*rad)) {
-
-          this._ctx.beginPath();
-          this._ctx.arc(curX + rad, curY, rad, 0, 2 * Math.PI);
-          curY = curY + rad + CircleSpace;
-
-          this._ctx.fill();
-
-        }
-        ;
-
-        curY = yEnd;
-        stopY = curY + rad;
-
-        while (curX >= xStart) {
-          this._ctx.beginPath();
-          this._ctx.arc(curX + rad, curY, rad, 0, 2 * Math.PI);
-          curX = curX - rad - CircleSpace;
-
-          this._ctx.fill();
-
-        }
-        ;
-
-        while (curY >= yStart) {
-
-          this._ctx.beginPath();
-          this._ctx.arc(curX + rad, curY, rad, 0, 2 * Math.PI);
-          curY = curY - rad - CircleSpace;
-
-          this._ctx.fill();
-
-        }
-        ;
-      };
-      //--< Aleksandr Ulianov. line of circle
-
-      //--> Aleksandr Ulianov dark background added
+      var stopX = stopArray[0];
+      var stopY = stopArray[1];
 
       this._ctx.beginPath();
+      //--< Aleksandr Ulianov. all draw systems moved to the function DrawBorder
+
       //outer rectangle
       this._ctx.moveTo(-this._container.width / 2,-this._container.height / 2);
       this._ctx.lineTo(this._container.width / 2,-this._container.height / 2);
@@ -202,13 +248,13 @@
       this._ctx.lineTo(-this._container.width / 2,this._container.height);
       this._ctx.lineTo(-this._container.width / 2,-this._container.height / 2);
 
+      //--> Aleksandr Ulianov dark background added
       //inner rectangle
-      this._ctx.lineTo(( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)),( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)));
-      //this._ctx.lineTo(((this._resizeConstraint.side/2)-(this._ctx.lineWidth)/2),( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)));
-      this._ctx.lineTo(stopX,( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)));
+      this._ctx.lineTo(( - (this._resizeConstraint.side / 2) - (this._ctx.lineWidth)),( - (this._resizeConstraint.side / 2) - (this._ctx.lineWidth)));
+      this._ctx.lineTo(stopX,( - (this._resizeConstraint.side / 2) - (this._ctx.lineWidth)));
       this._ctx.lineTo(stopX,stopY);
-      this._ctx.lineTo((-(this._resizeConstraint.side/2)-(this._ctx.lineWidth)),stopY);
-      this._ctx.lineTo((-(this._resizeConstraint.side/2)-(this._ctx.lineWidth)),( - (this._resizeConstraint.side/2)-(this._ctx.lineWidth)));
+      this._ctx.lineTo(( - (this._resizeConstraint.side / 2) - (this._ctx.lineWidth)),stopY);
+      this._ctx.lineTo(( - (this._resizeConstraint.side / 2) - (this._ctx.lineWidth)),( - (this._resizeConstraint.side / 2) - (this._ctx.lineWidth)));
 
       //fill style
       this._ctx.fillStyle = "rgba(0,0,0,0.8)";
@@ -217,7 +263,7 @@
       //text adding
       this._ctx.font = "15px Tahoma";
       this._ctx.fillStyle = "yellow";
-      this._ctx.fillText("" + this._image.naturalHeight + " x " + this._image.naturalWidth,-30, - (this._resizeConstraint.side/2)-(this._ctx.lineWidth) - 10);
+      this._ctx.fillText("" + this._image.naturalHeight + " x " + this._image.naturalWidth, -30, - (this._resizeConstraint.side / 2) - (this._ctx.lineWidth) - 10);
 
       //--< Aleksandr Ulianov dark background added
 
