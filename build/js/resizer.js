@@ -51,169 +51,7 @@
     this._onDrag = this._onDrag.bind(this);
   };
 
-  var incDecCoordinate = function(myCoordinate, mySpace, increase) {
 
-    if (!increase) {
-      myCoordinate = myCoordinate - mySpace;
-
-    } else {
-      myCoordinate = myCoordinate + mySpace;
-
-    }
-
-    return myCoordinate;
-  };
-
-  //---> Aleksandr Ulianov. function to draw a circle element for a border-line
-  var drawCircle = function(MyCTXToDraw, XCoord, YCoord, myRad) {
-
-    MyCTXToDraw.beginPath();
-    MyCTXToDraw.arc(XCoord, YCoord, myRad, 0, 2 * Math.PI);
-    MyCTXToDraw.fill();
-
-  };
-  //---< Aleksandr Ulianov. function to draw a circle element for a border-line
-
-  //---> Aleksandr Ulianov. function to draw dash border
-  var drawDashBorder = function(myCTX, myLineWidth, myConstraintSide) {
-
-    myCTX.strokeRect(
-    (-myConstraintSide / 2) - myLineWidth / 2,
-    (-myConstraintSide / 2) - myLineWidth / 2,
-    myConstraintSide - myLineWidth / 2,
-    myConstraintSide - myLineWidth / 2);
-    var stopX = (myConstraintSide - myLineWidth) / 2;
-    var stopY = (myConstraintSide - myLineWidth) / 2;
-
-    return [stopX, stopY];
-  };
-  //---< Aleksandr Ulianov. function to draw dash border
-
-  var checkCompResult = function(newCoordinate, destCoord, comp) {
-    var compRes = false;
-
-    if (comp === '>') {
-
-      if (newCoordinate > destCoord) {
-        compRes = true;
-      }
-    } else {
-
-      if (newCoordinate < destCoord) {
-        compRes = true;
-      }
-
-    }
-
-    return compRes;
-
-  };
-
-  //---> Aleksandr Ulianov. function to calculate new coordinates if necessary
-  var getNextCoord = function(oldCoordinate, curComp, destCoordinate, lesserComp, displacement) {
-    var newCoordinate = oldCoordinate;
-
-    var compRes = checkCompResult(newCoordinate, destCoordinate, curComp);
-
-    if (compRes) {
-      newCoordinate = incDecCoordinate(newCoordinate, displacement, (curComp === lesserComp));
-    } else {
-      newCoordinate = destCoordinate;
-    }
-
-    compRes = checkCompResult(newCoordinate, destCoordinate, curComp);
-
-    if (!compRes) {
-      newCoordinate = destCoordinate;
-    }
-
-    return newCoordinate;
-  };
-  //---< Aleksandr Ulianov. function to calculate new coordinates if necessary
-
-  //---> Aleksandr Ulianov. function to draw circle-elemented border
-  var drawCircleBorder = function(myCTX, myLineWidth, myConstraintSide) {
-    var xStart = ( -myConstraintSide / 2) - myLineWidth / 2;
-    var yStart = ( -myConstraintSide / 2) - myLineWidth / 2;
-    var xEnd = myConstraintSide / 2 - myLineWidth;
-    var yEnd = myConstraintSide / 2 - myLineWidth;
-    var rad = myLineWidth / 2;
-    var stopX = xEnd + rad;
-    var stopY = yEnd + rad;
-    var curX = xStart;
-    var curY = yStart;
-    var lesser = '<';
-    var greater = '>';
-    var curCompX = '';
-    var curCompY = '';
-    var nextCoordX = 0;
-    var nextCoordY = 0;
-    var coordinates = [];
-    //задаем массив точек, через которые проходит граница выделения
-    var pointsArray = [[xEnd, yStart],
-                    [xEnd, yEnd],
-                    [xStart, yEnd],
-                    [xStart, yStart]];
-    var CircleSpace = 8;
-    myCTX.fillStyle = 'yellow';
-
-    //цикл по точкам массива
-    for (var i = 0; i < pointsArray.length; i++) {
-      coordinates = pointsArray[i];
-      curCompX = greater;
-      curCompY = greater;
-
-      //координаты точки, к которой стремимся
-      nextCoordX = coordinates[0];
-      nextCoordY = coordinates[1];
-
-      //определяем направление движения (увеличение или уменьшение координаты)
-      if (nextCoordX > curX) {
-        curCompX = lesser;
-      }
-      if (nextCoordY > curY) {
-        curCompY = lesser;
-      }
-
-      //цикл пока не достигнем координат нашей точки
-      while ( (!(curX === nextCoordX)) || (!(curY === nextCoordY))) {
-
-        //рисуем элемент границы
-        drawCircle(myCTX, curX, curY, rad);
-
-        //изменяем координаты, если нужно
-        curX = getNextCoord(curX, curCompX, nextCoordX, lesser, (rad + CircleSpace));
-        curY = getNextCoord(curY, curCompY, nextCoordY, lesser, (rad + CircleSpace));
-
-      }
-
-    }
-
-    return [stopX, stopY];
-
-  };
-  //---< Aleksandr Ulianov. function to draw circle-elemented border
-
-  //---> Aleksandr Ulianov. function to draw some border
-  var drawBorder = function(myCTX, myLineWidth, myConstraintSide) {
-
-    var returnArray = [0, 0];
-
-    if (Math.random() < 0.5) {
-
-      //draw dash border
-      returnArray = drawDashBorder(myCTX, myLineWidth, myConstraintSide);
-
-    } else {
-      //draw border with circles
-      returnArray = drawCircleBorder(myCTX, myLineWidth, myConstraintSide);
-
-    }
-
-    return returnArray;
-
-  };
-  //---< Aleksandr Ulianov. function to draw some border
 
   Resizer.prototype = {
     /**
@@ -223,7 +61,169 @@
      */
     _element: null,
 
-    /**
+    incDecCoordinate: function(myCoordinate, mySpace, increase) {
+
+      if (!increase) {
+        myCoordinate = myCoordinate - mySpace;
+
+      } else {
+        myCoordinate = myCoordinate + mySpace;
+
+      }
+
+      return myCoordinate;
+    },
+    //---> Aleksandr Ulianov. function to draw a circle element for a border-line
+    drawCircle: function(XCoord, YCoord, myRad) {
+
+      this._ctx.beginPath();
+      this._ctx.arc(XCoord, YCoord, myRad, 0, 2 * Math.PI);
+      this._ctx.fill();
+
+    },
+    //---< Aleksandr Ulianov. function to draw a circle element for a border-line
+
+    //---> Aleksandr Ulianov. function to draw dash border
+    drawDashBorder: function() {
+
+      this._ctx.strokeRect(
+        (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+        (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+        this._resizeConstraint.side - this._ctx.lineWidth / 2,
+        this._resizeConstraint.side - this._ctx.lineWidth / 2);
+      var stopX = (this._resizeConstraint.side - this._ctx.lineWidth) / 2;
+      var stopY = (this._resizeConstraint.side - this._ctx.lineWidth) / 2;
+
+      return [stopX, stopY];
+    },
+    //---< Aleksandr Ulianov. function to draw dash border
+
+    checkIncreaseResult: function(newCoordinate, destCoord, increaseCoord) {
+      var compRes = false;
+
+      if (increaseCoord === false) {
+
+        if (newCoordinate > destCoord) {
+          compRes = true;
+        }
+      } else {
+
+        if (newCoordinate < destCoord) {
+          compRes = true;
+        }
+
+      }
+
+      return compRes;
+
+    },
+
+    //---> Aleksandr Ulianov. function to calculate new coordinates if necessary
+    getNextCoord: function(oldCoordinate, increaseCoord, destCoordinate, displacement) {
+      var newCoordinate = oldCoordinate;
+
+      var compRes = this.checkIncreaseResult(newCoordinate, destCoordinate, increaseCoord);
+
+      if (compRes) {
+        newCoordinate = this.incDecCoordinate(newCoordinate, displacement, increaseCoord);
+      } else {
+        newCoordinate = destCoordinate;
+      }
+
+      compRes = this.checkIncreaseResult(newCoordinate, destCoordinate, increaseCoord);
+
+      if (!compRes) {
+        newCoordinate = destCoordinate;
+      }
+
+      return newCoordinate;
+    },
+    //---< Aleksandr Ulianov. function to calculate new coordinates if necessary
+
+    //---> Aleksandr Ulianov. function to draw circle-elemented border
+    drawCircleBorder: function() {
+      var xStart = ( -this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+      var yStart = ( -this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+      var xEnd = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+      var yEnd = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+      var rad = this._ctx.lineWidth / 2;
+      var CircleSpace = 8;
+
+      var curX = xStart;
+      var curY = yStart;
+      var increaseX = false;
+      var increaseY = false;
+      var nextCoordX = 0;
+      var nextCoordY = 0;
+      var coordinates = [];
+
+      //задаем массив точек, через которые проходит граница выделения
+      var pointsArray = [[xEnd, yStart],
+        [xEnd, yEnd],
+        [xStart, yEnd],
+        [xStart, yStart]];
+
+      this._ctx.fillStyle = 'yellow';
+
+      //цикл по точкам массива
+      for (var i = 0; i < pointsArray.length; i++) {
+        coordinates = pointsArray[i];
+        increaseX = false;
+        increaseY = false;
+
+        //координаты точки, к которой стремимся
+        nextCoordX = coordinates[0];
+        nextCoordY = coordinates[1];
+
+        //определяем направление движения (увеличение или уменьшение координаты)
+        if (nextCoordX > curX) {
+          increaseX = true;
+        }
+        if (nextCoordY > curY) {
+          increaseY = true;
+        }
+
+        //цикл пока не достигнем координат нашей точки
+        while ( (curX !== nextCoordX) || (curY !== nextCoordY)) {
+
+          //рисуем элемент границы
+          this.drawCircle(curX, curY, rad);
+
+          //изменяем координаты, если нужно
+          curX = this.getNextCoord(curX, increaseX, nextCoordX, (rad + CircleSpace));
+          curY = this.getNextCoord(curY, increaseY, nextCoordY, (rad + CircleSpace));
+
+        }
+
+      }
+
+      return [xEnd + rad, yEnd + rad];
+
+    },
+    //---< Aleksandr Ulianov. function to draw circle-elemented border
+
+    //---> Aleksandr Ulianov. function to draw some border
+    drawBorder: function() {
+
+      var returnArray = [0, 0];
+
+      if (Math.random() < 0.5) {
+
+        //draw dash border
+        returnArray = this.drawDashBorder();
+
+      } else {
+        //draw border with circles
+        returnArray = this.drawCircleBorder();
+
+      }
+
+      return returnArray;
+
+    },
+    //---< Aleksandr Ulianov. function to draw some border
+
+   /**
      * Положение курсора в момент перетаскивания. От положения курсора
      * рассчитывается смещение на которое нужно переместить изображение
      * за каждую итерацию перетаскивания.
@@ -280,7 +280,7 @@
       // кадрирования. Координаты задаются от центра.
 
       //--> Aleksandr Ulianov. all draw systems moved to the function DrawBorder
-      var stopArray = drawBorder(this._ctx, this._ctx.lineWidth, this._resizeConstraint.side);
+      var stopArray = this.drawBorder();
 
       var stopX = stopArray[0];
       var stopY = stopArray[1];
