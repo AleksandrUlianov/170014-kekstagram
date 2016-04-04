@@ -68,7 +68,7 @@
   var drawCircle = function(MyCTXToDraw, XCoord, YCoord, myRad) {
 
     MyCTXToDraw.beginPath();
-    MyCTXToDraw.arc((XCoord + myRad), YCoord, myRad, 0, 2 * Math.PI);
+    MyCTXToDraw.arc(XCoord, YCoord, myRad, 0, 2 * Math.PI);
     MyCTXToDraw.fill();
 
   };
@@ -89,53 +89,78 @@
   };
   //---< Aleksandr Ulianov. function to draw dash border
 
+  //---> Aleksandr Ulianov. function to calculate new coordinates if necessary
+  var getNextCoord = function(oldCoordinate, curComp, destCoordinate, lesserComp, displacement) {
+    var newCoordinate = oldCoordinate;
+    if (eval('' + newCoordinate + ' ' + curComp + ' ' + destCoordinate)) {
+      newCoordinate = incDecCoordinate(newCoordinate, displacement, (curComp === lesserComp));
+    } else {
+      newCoordinate = destCoordinate;
+    }
+
+    if (!eval('' + newCoordinate + ' ' + curComp + ' ' + destCoordinate)) {
+      newCoordinate = destCoordinate;
+    }
+
+    return newCoordinate;
+  };
+  //---< Aleksandr Ulianov. function to calculate new coordinates if necessary
+
   //---> Aleksandr Ulianov. function to draw circle-elemented border
   var drawCircleBorder = function(myCTX, myLineWidth, myConstraintSide) {
     var xStart = ( -myConstraintSide / 2) - myLineWidth / 2;
     var yStart = ( -myConstraintSide / 2) - myLineWidth / 2;
     var xEnd = myConstraintSide / 2 - myLineWidth;
     var yEnd = myConstraintSide / 2 - myLineWidth;
-    var stopX = xEnd;
-    var stopY = yEnd;
     var rad = myLineWidth / 2;
+    var stopX = xEnd + rad;
+    var stopY = yEnd + rad;
     var curX = xStart;
     var curY = yStart;
-
+    var lesser = '<';
+    var greater = '>';
+    var curCompX = '';
+    var curCompY = '';
+    var nextCoordX = 0;
+    var nextCoordY = 0;
+    var coordinates = [];
+    //задаем массив точек, через которые проходит граница выделения
+    var pointsArray = [[xEnd, yStart],
+                    [xEnd, yEnd],
+                    [xStart, yEnd],
+                    [xStart, yStart]];
     var CircleSpace = 8;
     myCTX.fillStyle = 'yellow';
 
-    // upper horizontal border-line
-    while (curX <= (xEnd - 2 * rad)) {
-      drawCircle(myCTX, curX, curY, rad);
-      curX = incDecCoordinate(curX, (rad + CircleSpace), true);
+    //цикл по точкам массива
+    for (var i = 0; i < pointsArray.length; i++) {
+      coordinates = pointsArray[i];
+      curCompX = greater;
+      curCompY = greater;
 
-    }
+      //координаты точки, к которой стремимся
+      nextCoordX = coordinates[0];
+      nextCoordY = coordinates[1];
 
-    curX = xEnd;
-    stopX = curX + rad;
+      //определяем направление движения (увеличение или уменьшение координаты)
+      if (nextCoordX > curX) {
+        curCompX = lesser;
+      }
+      if (nextCoordY > curY) {
+        curCompY = lesser;
+      }
 
-    //right vertical border-line
-    while (curY <= (yEnd - 2 * rad)) {
-      drawCircle(myCTX, curX, curY, rad);
-      curY = incDecCoordinate(curY, (rad + CircleSpace), true);
+      //цикл пока не достигнем координат нашей точки
+      while ( (!(curX === nextCoordX)) || (!(curY === nextCoordY))) {
 
-    }
+        //рисуем элемент границы
+        drawCircle(myCTX, curX, curY, rad);
 
-    curY = yEnd;
-    stopY = curY + rad;
+        //изменяем координаты, если нужно
+        curX = getNextCoord(curX, curCompX, nextCoordX, lesser, (rad + CircleSpace));
+        curY = getNextCoord(curY, curCompY, nextCoordY, lesser, (rad + CircleSpace));
 
-    //lower horizontal border-line
-    while (curX >= xStart) {
-      drawCircle(myCTX, curX, curY, rad);
-      curX = incDecCoordinate(curX, (rad + CircleSpace), false);
-
-    }
-    curX = xStart - rad;
-
-    //left vertical border-line
-    while (curY >= yStart) {
-      drawCircle(myCTX, curX, curY, rad);
-      curY = incDecCoordinate(curY, (rad + CircleSpace), false);
+      }
 
     }
 
@@ -149,7 +174,7 @@
 
     var returnArray = [0, 0];
 
-    if (Math.random() > 0.5) {
+    if (Math.random() < 0.1) {
 
       //draw dash border
       returnArray = drawDashBorder(myCTX, myLineWidth, myConstraintSide);
