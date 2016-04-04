@@ -89,16 +89,41 @@
   };
   //---< Aleksandr Ulianov. function to draw dash border
 
+  var checkCompResult = function(newCoordinate, destCoord, comp) {
+    var compRes = false;
+
+    if (comp === '>') {
+
+      if (newCoordinate > destCoord) {
+        compRes = true;
+      }
+    } else {
+
+      if (newCoordinate < destCoord) {
+        compRes = true;
+      }
+
+    }
+
+    return compRes;
+
+  };
+
   //---> Aleksandr Ulianov. function to calculate new coordinates if necessary
   var getNextCoord = function(oldCoordinate, curComp, destCoordinate, lesserComp, displacement) {
     var newCoordinate = oldCoordinate;
-    if (eval('' + newCoordinate + ' ' + curComp + ' ' + destCoordinate)) {
+
+    var compRes = checkCompResult(newCoordinate, destCoordinate, curComp);
+
+    if (compRes) {
       newCoordinate = incDecCoordinate(newCoordinate, displacement, (curComp === lesserComp));
     } else {
       newCoordinate = destCoordinate;
     }
 
-    if (!eval('' + newCoordinate + ' ' + curComp + ' ' + destCoordinate)) {
+    compRes = checkCompResult(newCoordinate, destCoordinate, curComp);
+
+    if (!compRes) {
       newCoordinate = destCoordinate;
     }
 
@@ -174,7 +199,7 @@
 
     var returnArray = [0, 0];
 
-    if (Math.random() < 0.1) {
+    if (Math.random() < 0.5) {
 
       //draw dash border
       returnArray = drawDashBorder(myCTX, myLineWidth, myConstraintSide);
