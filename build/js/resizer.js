@@ -102,15 +102,10 @@
       var compRes = false;
 
       if (increaseCoord === false) {
+        compRes = newCoordinate > destCoord;
 
-        if (newCoordinate > destCoord) {
-          compRes = true;
-        }
       } else {
-
-        if (newCoordinate < destCoord) {
-          compRes = true;
-        }
+        compRes = newCoordinate < destCoord;
 
       }
 
@@ -143,9 +138,9 @@
     //---> Aleksandr Ulianov. function to draw circle-elemented border
     drawCircleBorder: function() {
       var xStart = ( -this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
-      var yStart = ( -this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+      var yStart = xStart;
       var xEnd = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
-      var yEnd = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+      var yEnd = xEnd;
       var rad = this._ctx.lineWidth / 2;
       var CircleSpace = 8;
 
@@ -168,20 +163,13 @@
       //цикл по точкам массива
       for (var i = 0; i < pointsArray.length; i++) {
         coordinates = pointsArray[i];
-        increaseX = false;
-        increaseY = false;
 
         //координаты точки, к которой стремимся
         nextCoordX = coordinates[0];
         nextCoordY = coordinates[1];
 
-        //определяем направление движения (увеличение или уменьшение координаты)
-        if (nextCoordX > curX) {
-          increaseX = true;
-        }
-        if (nextCoordY > curY) {
-          increaseY = true;
-        }
+        increaseX = nextCoordX > curX;
+        increaseY = nextCoordY > curY;
 
         //цикл пока не достигнем координат нашей точки
         while ( (curX !== nextCoordX) || (curY !== nextCoordY)) {
