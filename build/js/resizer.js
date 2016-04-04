@@ -51,6 +51,8 @@
     this._onDrag = this._onDrag.bind(this);
   };
 
+
+
   Resizer.prototype = {
     /**
      * Родительский элемент канваса.
@@ -59,7 +61,157 @@
      */
     _element: null,
 
-    /**
+    incDecCoordinate: function(myCoordinate, mySpace, increase) {
+
+      if (!increase) {
+        myCoordinate = myCoordinate - mySpace;
+
+      } else {
+        myCoordinate = myCoordinate + mySpace;
+
+      }
+
+      return myCoordinate;
+    },
+    //---> Aleksandr Ulianov. function to draw a circle element for a border-line
+    drawCircle: function(XCoord, YCoord, myRad) {
+
+      this._ctx.beginPath();
+      this._ctx.arc(XCoord, YCoord, myRad, 0, 2 * Math.PI);
+      this._ctx.fill();
+
+    },
+    //---< Aleksandr Ulianov. function to draw a circle element for a border-line
+
+    //---> Aleksandr Ulianov. function to draw dash border
+    drawDashBorder: function() {
+
+      this._ctx.strokeRect(
+        (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+        (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+        this._resizeConstraint.side - this._ctx.lineWidth / 2,
+        this._resizeConstraint.side - this._ctx.lineWidth / 2);
+      var stopX = (this._resizeConstraint.side - this._ctx.lineWidth) / 2;
+      var stopY = (this._resizeConstraint.side - this._ctx.lineWidth) / 2;
+
+      return [stopX, stopY];
+    },
+    //---< Aleksandr Ulianov. function to draw dash border
+
+    checkIncreaseResult: function(newCoordinate, destCoord, increaseCoord) {
+      var compRes = false;
+
+      if (increaseCoord === false) {
+        compRes = newCoordinate > destCoord;
+
+      } else {
+        compRes = newCoordinate < destCoord;
+
+      }
+
+      return compRes;
+
+    },
+
+    //---> Aleksandr Ulianov. function to calculate new coordinates if necessary
+    getNextCoord: function(oldCoordinate, increaseCoord, destCoordinate, displacement) {
+      var newCoordinate = oldCoordinate;
+
+      var compRes = this.checkIncreaseResult(newCoordinate, destCoordinate, increaseCoord);
+
+      if (compRes) {
+        newCoordinate = this.incDecCoordinate(newCoordinate, displacement, increaseCoord);
+      } else {
+        newCoordinate = destCoordinate;
+      }
+
+      compRes = this.checkIncreaseResult(newCoordinate, destCoordinate, increaseCoord);
+
+      if (!compRes) {
+        newCoordinate = destCoordinate;
+      }
+
+      return newCoordinate;
+    },
+    //---< Aleksandr Ulianov. function to calculate new coordinates if necessary
+
+    //---> Aleksandr Ulianov. function to draw circle-elemented border
+    drawCircleBorder: function() {
+      var xStart = ( -this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
+      var yStart = xStart;
+      var xEnd = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+      var yEnd = xEnd;
+      var rad = this._ctx.lineWidth / 2;
+      var CircleSpace = 8;
+
+      var curX = xStart;
+      var curY = yStart;
+      var increaseX = false;
+      var increaseY = false;
+      var nextCoordX = 0;
+      var nextCoordY = 0;
+      var coordinates = [];
+
+      //задаем массив точек, через которые проходит граница выделения
+      var pointsArray = [[xEnd, yStart],
+        [xEnd, yEnd],
+        [xStart, yEnd],
+        [xStart, yStart]];
+
+      this._ctx.fillStyle = 'yellow';
+
+      //цикл по точкам массива
+      for (var i = 0; i < pointsArray.length; i++) {
+        coordinates = pointsArray[i];
+
+        //координаты точки, к которой стремимся
+        nextCoordX = coordinates[0];
+        nextCoordY = coordinates[1];
+
+        increaseX = nextCoordX > curX;
+        increaseY = nextCoordY > curY;
+
+        //цикл пока не достигнем координат нашей точки
+        while ( (curX !== nextCoordX) || (curY !== nextCoordY)) {
+
+          //рисуем элемент границы
+          this.drawCircle(curX, curY, rad);
+
+          //изменяем координаты, если нужно
+          curX = this.getNextCoord(curX, increaseX, nextCoordX, (rad + CircleSpace));
+          curY = this.getNextCoord(curY, increaseY, nextCoordY, (rad + CircleSpace));
+
+        }
+
+      }
+
+      return [xEnd + rad, yEnd + rad];
+
+    },
+    //---< Aleksandr Ulianov. function to draw circle-elemented border
+
+    //---> Aleksandr Ulianov. function to draw some border
+    drawBorder: function() {
+
+      var returnArray = [0, 0];
+
+      if (Math.random() < 0.5) {
+
+        //draw dash border
+        returnArray = this.drawDashBorder();
+
+      } else {
+        //draw border with circles
+        returnArray = this.drawCircleBorder();
+
+      }
+
+      return returnArray;
+
+    },
+    //---< Aleksandr Ulianov. function to draw some border
+
+   /**
      * Положение курсора в момент перетаскивания. От положения курсора
      * рассчитывается смещение на которое нужно переместить изображение
      * за каждую итерацию перетаскивания.
@@ -114,11 +266,41 @@
 
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+
+      //--> Aleksandr Ulianov. all draw systems moved to the function DrawBorder
+      var stopArray = this.drawBorder();
+
+      var stopX = stopArray[0];
+      var stopY = stopArray[1];
+
+      this._ctx.beginPath();
+      //--< Aleksandr Ulianov. all draw systems moved to the function DrawBorder
+
+      //outer rectangle
+      this._ctx.moveTo(-this._container.width / 2, -this._container.height / 2);
+      this._ctx.lineTo(this._container.width / 2, -this._container.height / 2);
+      this._ctx.lineTo(this._container.width / 2, this._container.height);
+      this._ctx.lineTo(-this._container.width / 2, this._container.height);
+      this._ctx.lineTo(-this._container.width / 2, -this._container.height / 2);
+
+      //--> Aleksandr Ulianov dark background added
+      //inner rectangle
+      this._ctx.lineTo(( -(this._resizeConstraint.side / 2) - (this._ctx.lineWidth)), ( -(this._resizeConstraint.side / 2) - (this._ctx.lineWidth)));
+      this._ctx.lineTo(stopX, ( -(this._resizeConstraint.side / 2) - (this._ctx.lineWidth)));
+      this._ctx.lineTo(stopX, stopY);
+      this._ctx.lineTo(( -(this._resizeConstraint.side / 2) - (this._ctx.lineWidth)), stopY);
+      this._ctx.lineTo(( -(this._resizeConstraint.side / 2) - (this._ctx.lineWidth)), ( -(this._resizeConstraint.side / 2) - (this._ctx.lineWidth)));
+
+      //fill style
+      this._ctx.fillStyle = 'rgba(0,0,0,0.8)';
+      this._ctx.fill('evenodd');
+
+      //text adding
+      this._ctx.font = '15px Tahoma';
+      this._ctx.fillStyle = 'yellow';
+      this._ctx.fillText('' + this._image.naturalHeight + ' x ' + this._image.naturalWidth, -30, -(this._resizeConstraint.side / 2) - (this._ctx.lineWidth) - 10);
+
+      //--< Aleksandr Ulianov dark background added
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
