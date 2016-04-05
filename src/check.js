@@ -65,7 +65,7 @@ var getMessage = function(a,b) {
 
         returnMessage = "Общая площадь артефактов сжатия: [" + squareSum + "] пикселей";
 
-      }
+      };
       //--< the second condition is array
 
       //--> the second condition is Not an Array
