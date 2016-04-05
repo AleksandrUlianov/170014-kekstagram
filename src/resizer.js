@@ -73,7 +73,14 @@
 
       return myCoordinate;
     },
-    //---> Aleksandr Ulianov. function to draw a circle element for a border-line
+
+    /**
+     * Aleksandr Ulianov
+     * отрисовка точки (одного элемента границы)
+     * @param {float} XCoord
+     * @param {float} YCoord
+     * @param {float} myRad
+     */
     drawCircle: function(XCoord, YCoord, myRad) {
 
       this._ctx.beginPath();
@@ -81,9 +88,15 @@
       this._ctx.fill();
 
     },
-    //---< Aleksandr Ulianov. function to draw a circle element for a border-line
 
-    //---> Aleksandr Ulianov. function to draw dash border
+    /**
+     * Aleksandr Ulianov
+     * отрисовка границ области
+     * пунктирной линией
+     * выненсено в отдельную функцию для
+     * универсалицаии процесса отрисовки границы
+     *
+     */
     drawDashBorder: function() {
 
       this._ctx.strokeRect(
@@ -96,8 +109,16 @@
 
       return [stopX, stopY];
     },
-    //---< Aleksandr Ulianov. function to draw dash border
 
+    /**
+     * Aleksandr Ulianov
+     * проверка достижения текущей координаты
+     * требуемого значения
+     * @param {float} newCoordinate
+     * @param {float} destCoord
+     * @param {boolean} increaseCoord
+     *
+     */
     checkIncreaseResult: function(newCoordinate, destCoord, increaseCoord) {
       var compRes = false;
 
@@ -113,7 +134,15 @@
 
     },
 
-    //---> Aleksandr Ulianov. function to calculate new coordinates if necessary
+    /**
+     * Aleksandr Ulianov
+     * вычисление следующей координаты
+     * @param {float} oldCoordinate
+     * @param {boolean} increaseCoord
+     * @param {float} destCoordinate
+     * @param {number} displacement
+     *
+     */
     getNextCoord: function(oldCoordinate, increaseCoord, destCoordinate, displacement) {
       var newCoordinate = oldCoordinate;
 
@@ -133,9 +162,11 @@
 
       return newCoordinate;
     },
-    //---< Aleksandr Ulianov. function to calculate new coordinates if necessary
 
-    //---> Aleksandr Ulianov. function to draw circle-elemented border
+    /**
+     * Aleksandr Ulianov
+     * функция для отрисовки границы точками
+     */
     drawCircleBorder: function() {
       var xStart = ( -this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2;
       var yStart = xStart;
@@ -188,9 +219,11 @@
       return [xEnd + rad, yEnd + rad];
 
     },
-    //---< Aleksandr Ulianov. function to draw circle-elemented border
 
-    //---> Aleksandr Ulianov. function to draw some border
+  /**
+   * Aleksandr Ulianov
+   * функция для отрисовки границы области выделения
+   */
     drawBorder: function() {
 
       var returnArray = [0, 0];
@@ -209,9 +242,8 @@
       return returnArray;
 
     },
-    //---< Aleksandr Ulianov. function to draw some border
 
-   /**
+    /**
      * Положение курсора в момент перетаскивания. От положения курсора
      * рассчитывается смещение на которое нужно переместить изображение
      * за каждую итерацию перетаскивания.
