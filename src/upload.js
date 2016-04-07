@@ -66,16 +66,39 @@
     var randomImageNumber = Math.round(Math.random() * (images.length - 1));
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   }
-
+  /**
+   * Ulianov Aleksandr
+   * форма кадрирования изображения, метка "слева"
+   * @type {HTMLElement}
+   */
+  var leftDisplacementLabel = document.querySelector('#resize-x');
+  /**
+   * Ulianov Aleksandr
+   * форма кадрирования изображения, метка "сверху"
+   * @type {HTMLElement}
+   */
+  var topDisplacementLabel = document.querySelector('#resize-y');
+  /**
+   * Ulianov Aleksandr
+   * форма кадрирования изображения, метка "сторона"
+   * @type {HTMLElement}
+   */
+  var selectedBorderLabel = document.querySelector('#resize-size');
+  /**
+   * Ulianov Aleksandr
+   * форма кадрирования изображения, кнопка submit
+   * @type {HTMLElement}
+   */
+  var buttonSubmitForm = document.querySelector('#resize-fwd');
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    var leftDisplacement = document.querySelector('#resize-x').value;
-    var topDisplacement = document.querySelector('#resize-y').value;
-    var selectedBorder = document.querySelector('#resize-size').value;
-    var buttonSubmitForm = document.querySelector('#resize-fwd');
+    var leftDisplacement = leftDisplacementLabel.value;
+    var topDisplacement = topDisplacementLabel.value;
+    var selectedBorder = selectedBorderLabel.value;
+
     var rightCoordinate = 0;
     var bottomCoordinate = 0;
     var returnValue = true;
@@ -88,6 +111,7 @@
     bottomCoordinate = topDisplacement + selectedBorder;
 
     buttonSubmitForm.classList.remove('disabled');
+    buttonSubmitForm.disabled = false;
 
     //выполним необходимые проверки
     if (!(selectedBorder > 0) ||
@@ -102,6 +126,7 @@
     if (returnValue === false) {
 
       buttonSubmitForm.classList.add('disabled');
+      buttonSubmitForm.disabled = true;
       return returnValue;
 
     }
@@ -136,24 +161,7 @@
    * @type {HTMLElement}
    */
   var uploadMessage = document.querySelector('.upload-message');
-  /**
-   * Ulianov Aleksandr
-   * форма кадрирования изображения, метка "слева"
-   * @type {HTMLElement}
-   */
-  var leftDisplacementLabel = document.querySelector('#resize-x');
-  /**
-   * Ulianov Aleksandr
-   * форма кадрирования изображения, метка "сверху"
-   * @type {HTMLElement}
-   */
-  var topDisplacementLabel = document.querySelector('#resize-y');
-  /**
-   * Ulianov Aleksandr
-   * форма кадрирования изображения, метка "сторона"
-   * @type {HTMLElement}
-   */
-  var selectedBorderLabel = document.querySelector('#resize-size');
+
   /**
    * @param {Action} action
    * @param {string=} message
@@ -311,7 +319,7 @@
    * добавим проверку валидности данных в изменение объектов проверки
    * @param evt
      */
-  leftDisplacementLabel.onchange = function(evt) {
+  leftDisplacementLabel.oninput = function(evt) {
     evt.preventDefault();
 
     resizeFormIsValid();
@@ -323,7 +331,7 @@
    * добавим проверку валидности данных в изменение объектов проверки
    * @param evt
    */
-  topDisplacementLabel.onchange = function(evt) {
+  topDisplacementLabel.oninput = function(evt) {
     evt.preventDefault();
 
     resizeFormIsValid();
@@ -335,7 +343,7 @@
    * добавим проверку валидности данных в изменение объектов проверки
    * @param evt
    */
-  selectedBorderLabel.onchange = function(evt) {
+  selectedBorderLabel.oninput = function(evt) {
     evt.preventDefault();
 
     resizeFormIsValid();
