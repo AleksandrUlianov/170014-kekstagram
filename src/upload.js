@@ -71,19 +71,19 @@
    * форма кадрирования изображения, метка "слева"
    * @type {HTMLElement}
    */
-  var leftDisplacementLabel = document.querySelector('#resize-x');
+  var leftDisplacementInput = document.querySelector('#resize-x');
   /**
    * Ulianov Aleksandr
    * форма кадрирования изображения, метка "сверху"
    * @type {HTMLElement}
    */
-  var topDisplacementLabel = document.querySelector('#resize-y');
+  var topDisplacementInput = document.querySelector('#resize-y');
   /**
    * Ulianov Aleksandr
    * форма кадрирования изображения, метка "сторона"
    * @type {HTMLElement}
    */
-  var selectedBorderLabel = document.querySelector('#resize-size');
+  var selectedBorderInput = document.querySelector('#resize-size');
   /**
    * Ulianov Aleksandr
    * форма кадрирования изображения, кнопка submit
@@ -95,9 +95,9 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    var leftDisplacement = leftDisplacementLabel.value;
-    var topDisplacement = topDisplacementLabel.value;
-    var selectedBorder = selectedBorderLabel.value;
+    var leftDisplacement = leftDisplacementInput.value;
+    var topDisplacement = topDisplacementInput.value;
+    var selectedBorder = selectedBorderInput.value;
 
     var rightCoordinate = 0;
     var bottomCoordinate = 0;
@@ -110,7 +110,6 @@
     rightCoordinate = leftDisplacement + selectedBorder;
     bottomCoordinate = topDisplacement + selectedBorder;
 
-    buttonSubmitForm.classList.remove('disabled');
     buttonSubmitForm.disabled = false;
 
     //выполним необходимые проверки
@@ -125,7 +124,6 @@
     //если проверка валидности не прошла, то сделаем кнопку submit не активной
     if (returnValue === false) {
 
-      buttonSubmitForm.classList.add('disabled');
       buttonSubmitForm.disabled = true;
       return returnValue;
 
@@ -319,7 +317,7 @@
    * добавим проверку валидности данных в изменение объектов проверки
    * @param evt
      */
-  leftDisplacementLabel.oninput = function(evt) {
+  leftDisplacementInput.oninput = function(evt) {
     evt.preventDefault();
 
     resizeFormIsValid();
@@ -331,7 +329,7 @@
    * добавим проверку валидности данных в изменение объектов проверки
    * @param evt
    */
-  topDisplacementLabel.oninput = function(evt) {
+  topDisplacementInput.oninput = function(evt) {
     evt.preventDefault();
 
     resizeFormIsValid();
@@ -343,7 +341,7 @@
    * добавим проверку валидности данных в изменение объектов проверки
    * @param evt
    */
-  selectedBorderLabel.oninput = function(evt) {
+  selectedBorderInput.oninput = function(evt) {
     evt.preventDefault();
 
     resizeFormIsValid();
