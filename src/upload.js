@@ -66,13 +66,70 @@
     var randomImageNumber = Math.round(Math.random() * (images.length - 1));
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   }
-
+  /**
+   * Ulianov Aleksandr
+   * форма кадрирования изображения, метка "слева"
+   * @type {HTMLElement}
+   */
+  var leftDisplacementInput = document.querySelector('#resize-x');
+  /**
+   * Ulianov Aleksandr
+   * форма кадрирования изображения, метка "сверху"
+   * @type {HTMLElement}
+   */
+  var topDisplacementInput = document.querySelector('#resize-y');
+  /**
+   * Ulianov Aleksandr
+   * форма кадрирования изображения, метка "сторона"
+   * @type {HTMLElement}
+   */
+  var selectedBorderInput = document.querySelector('#resize-size');
+  /**
+   * Ulianov Aleksandr
+   * форма кадрирования изображения, кнопка submit
+   * @type {HTMLElement}
+   */
+  var buttonSubmitForm = document.querySelector('#resize-fwd');
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    var leftDisplacement = leftDisplacementInput.value;
+    var topDisplacement = topDisplacementInput.value;
+    var selectedBorder = selectedBorderInput.value;
+
+    var rightCoordinate = 0;
+    var bottomCoordinate = 0;
+    var returnValue = true;
+
+    //переведем значения строк в числа
+    leftDisplacement = leftDisplacement === '' ? 0 : parseInt(leftDisplacement, 10);
+    topDisplacement = topDisplacement === '' ? 0 : parseInt(topDisplacement, 10);
+    selectedBorder = selectedBorder === '' ? 0 : parseInt(selectedBorder, 10);
+    rightCoordinate = leftDisplacement + selectedBorder;
+    bottomCoordinate = topDisplacement + selectedBorder;
+
+    buttonSubmitForm.disabled = false;
+
+    //выполним необходимые проверки
+    if (!(selectedBorder > 0) ||
+      (leftDisplacement < 0) ||
+      (topDisplacement < 0) ||
+      (rightCoordinate > currentResizer._image.naturalWidth) ||
+      (bottomCoordinate > currentResizer._image.naturalHeight)) {
+      returnValue = false;
+    }
+
+    //если проверка валидности не прошла, то сделаем кнопку submit не активной
+    if (returnValue === false) {
+
+      buttonSubmitForm.disabled = true;
+      return returnValue;
+
+    }
+
+    return returnValue;
   }
 
   /**
@@ -252,6 +309,43 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+  };
+
+
+  /**
+   * Ulianov Aleksandr
+   * добавим проверку валидности данных в изменение объектов проверки
+   * @param evt
+     */
+  leftDisplacementInput.oninput = function(evt) {
+    evt.preventDefault();
+
+    resizeFormIsValid();
+
+  };
+
+  /**
+   * Ulianov Aleksandr
+   * добавим проверку валидности данных в изменение объектов проверки
+   * @param evt
+   */
+  topDisplacementInput.oninput = function(evt) {
+    evt.preventDefault();
+
+    resizeFormIsValid();
+
+  };
+
+  /**
+   * Ulianov Aleksandr
+   * добавим проверку валидности данных в изменение объектов проверки
+   * @param evt
+   */
+  selectedBorderInput.oninput = function(evt) {
+    evt.preventDefault();
+
+    resizeFormIsValid();
+
   };
 
   cleanupResizer();
